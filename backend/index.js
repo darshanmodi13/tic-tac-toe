@@ -2,7 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const http = require("http");
 
-const server = http.createServer();
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.write("Hello World!");
+  res.end();
+});
 const io = require("socket.io")(server, {
   cors: {
     origin: "*",
@@ -10,7 +14,10 @@ const io = require("socket.io")(server, {
 });
 const Game = require("./GameSchema");
 
-require("dotenv").config();
+const environment = process.env.NODE_ENV || "development";
+if (environment === "development") {
+  require("dotenv").config();
+}
 
 mongoose
   .connect(process.env.DB, {
@@ -29,10 +36,6 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-app.get("/", (req, res) => {
-  res.end("Tic Toe Server.");
-});
 
 io.on("connection", (socket) => {
   try {
@@ -125,7 +128,12 @@ let room = async (props) => {
   return players.users;
 };
 
-const PORT = process.env.PORT || "3300";
-server.listen(PORT, () => {
+app.get("/", (req, res) => {
+  res.end("Tic Toe Server.");
+});
+
+const PORT = process.env.PORT || "8080";
+
+app.listen(PORT, () => {
   console.log(`Port Listening on ${PORT}`);
 });
