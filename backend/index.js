@@ -30,6 +30,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.get("/", (req, res) => {
+  res.end("Tic Toe Server.");
+});
+
 io.on("connection", (socket) => {
   try {
     console.log("New Connection...");
